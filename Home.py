@@ -17,6 +17,8 @@ st.markdown(
     In this App you will be able to control your personal finances all in one place.
 
     **👈 Select one of the options in the left menu** 
+
+    Start by creating new accounts and categories.
 """
 )
 
@@ -58,7 +60,8 @@ with col1:
 with col2:
     st.write('Only Debit Accounts: ', debits_data)
 
-
+st.markdown('# In this section you can see all your expenses by YEAR, MONTH and Category')
+st.write('Select your filters')
 # select a filter to use to vizualize data by category and by date 
 filter_year = st.selectbox('Select the year to filter: ', all_data['MOV_YEAR'].unique().tolist())
 filter_month = st.selectbox('Select the month to filter: ', all_data['MOV_MONTH'].unique().tolist())
