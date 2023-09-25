@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 from utils.get_db_data import get_all_data_from_all_accounts
+from utils.general_utils import change_symbol, format_currency
 
 st.set_page_config(
     page_title="Home",
@@ -28,17 +29,6 @@ col1, col2 = st.columns(2)
 # get databases 
 all_data = get_all_data_from_all_accounts()
 # print(all_data)
-
-def change_symbol(mov_type, val):
-    if mov_type == 'EXPENSES':
-        return -val
-    else:
-        return val
-
-# Define a formatting function
-def format_currency(value):
-    return '${:,.2f}'.format(value)
-
 
 all_data['amount'] = all_data.apply(lambda row: change_symbol(mov_type=row['mov_type'], val=row['amount']), axis=1)
 
