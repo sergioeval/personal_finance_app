@@ -20,6 +20,10 @@ def get_all_data_from_all_accounts():
         temp = pd.read_sql(con=conn, sql='select * from mytable')
         temp['account'] = acc
         all_data = pd.concat([all_data, temp], ignore_index=True)
+
+    all_data['mov_date'] = pd.to_datetime(all_data['mov_date'])
+    all_data['MOV_YEAR'] = all_data['mov_date'].dt.year
+    all_data['MOV_MONTH'] = all_data['mov_date'].dt.month
     
     return all_data
 

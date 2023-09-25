@@ -46,7 +46,7 @@ with st.form("record_creation", clear_on_submit=True):
             cursor = conn.cursor()
 
             sql_new_record_template = sql_new_record_template.format(mov_date, mov_category, mov_type, mov_amonut)
-            print(sql_new_record_template)
+            # print(sql_new_record_template)
             cursor.execute(sql_new_record_template)
             conn.commit()
             conn.close()
