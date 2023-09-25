@@ -57,7 +57,7 @@ filter_year = st.selectbox('Select the year to filter: ', all_data['MOV_YEAR'].u
 filter_month = st.selectbox('Select the month to filter: ', all_data['MOV_MONTH'].unique().tolist())
 
 # filtering data frame 
-df_filtered = all_data[(all_data['MOV_YEAR'] == filter_year) & (all_data['MOV_MONTH'] == filter_month) & (all_data['mov_type'].isin(['TRANSFERS', 'INCOME']) == False)]
+df_filtered = all_data[(all_data['MOV_YEAR'] == filter_year) & (all_data['MOV_MONTH'] == filter_month) & (all_data['mov_type']=='EXPENSES')]
 df_filtered = pd.pivot_table(df_filtered, values='amount', index=['mov_category', 'MOV_YEAR', 'MOV_MONTH'], aggfunc='sum', margins=True)
 df_filtered['amount'] = df_filtered['amount'].apply(format_currency)
 df_filtered.reset_index(inplace=True, drop=False)
