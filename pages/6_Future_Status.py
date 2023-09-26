@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd 
-from utils.get_db_data import get_all_data_from_all_accounts
 from utils.general_utils import change_symbol, format_currency
 import datetime
-
+from utils.db_connector import Db_Connector
 
 
 st.set_page_config(
@@ -13,20 +12,20 @@ st.set_page_config(
 
 st.write("# This is the status of your accounts adding future transactions")
 
+
 # ------------- MAIN CONTENT STARTS HERE --------------------
 # get databases and filter only to current date 
-all_data = get_all_data_from_all_accounts()
+db = Db_Connector()
+
+all_data = db.get_all_data_from_all_accounts()
+
 max_date = max(all_data['mov_date'])
 max_date = max_date.strftime("%B %d %Y")
 st.write(f'The Maximun date is: ', max_date)
 
-print(all_data)
-
 
 # Create columns for tables 
 col1, col2 = st.columns(2)
-
-
 
 all_data['amount'] = all_data.apply(lambda row: change_symbol(mov_type=row['mov_type'], val=row['amount']), axis=1)
 

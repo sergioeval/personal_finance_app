@@ -1,21 +1,33 @@
-#%%
-from utils.get_account_dbs import get_account_dataframe
-import sqlite3
-import pandas as pd
+from utils.db_connector import Db_Connector
 
-#%%
-accounts_df = get_account_dataframe()
-accounts_df.head()
 
-#%% variables 
-ACCOUNTS_PATH = 'accounts/'
 
-#%%
+db_conn = Db_Connector()
 
-conn = sqlite3.connect(ACCOUNTS_PATH+'BBVA_DEBIT.db')
 
-#%%
-sql = ''' select * from mytable '''
-data = pd.read_sql(con=conn, sql=sql)
-data.head()
-# %%
+account_list = db_conn.get_db_names_list()
+print(account_list)
+
+alter1 = '''
+ALTER TABLE mytable
+ADD COLUMN "transfer_from" TEXT
+'''
+alter2 = '''
+ALTER TABLE mytable
+ADD COLUMN "transfer_to" TEXT
+'''
+
+for db in account_list:
+    try:
+        #db_conn.modify_db_sql(sql=alter1, db_name=db)
+    except:
+        pass
+
+    try:
+        #db_conn.modify_db_sql(sql=alter2, db_name=db)
+    except:
+        pass
+
+    print(#db_conn.sql_to_df(sql='select * from mytable', db_name=db))
+
+
