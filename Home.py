@@ -1,19 +1,20 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
-from utils.get_db_data import get_all_data_from_all_accounts
-from utils.get_account_dbs import get_account_dataframe
 from utils.general_utils import change_symbol, format_currency
 import time 
 from utils.boxApiJson import BoxApiJson
 import glob
 import datetime
+from utils.db_connector import Db_Connector
 
 BOX_CREDS = 'secrets/'
 box_api = BoxApiJson(jsonPath=BOX_CREDS+'BoxCredentials.json')
 box_accounts_folder_id = '227810718878'
 box_categories_folder_id = '227810963459'
 ACCOUNTS_PATH = 'accounts/'
+
+db =  Db_Connector()
 
 st.set_page_config(
     page_title="Home",
@@ -63,8 +64,7 @@ with st.sidebar.form('Box Updates', clear_on_submit=True):
         if box_action_confirm.upper() == 'UPLOAD_DATABASES':
             print('UPLOADING')
             # uploading accounts 
-            dbs = get_account_dataframe()
-            dbs = dbs['Account_Name'].tolist()
+            dbs = db.get_unique_account_names_list()
             for db in dbs:
                 box_api.uploadNewOrVersion(folderId=box_accounts_folder_id, 
                                            fileName=db, 
@@ -88,7 +88,8 @@ current_date = datetime.datetime.now()
 #current_date = current_date.strftime('%Y-%m-%d')
 
 # get databases and filter only to current date 
-all_data = get_all_data_from_all_accounts()
+#all_data = get_all_data_from_all_accounts()
+all_data =db.get_all_data_from_all_accounts()
 all_data = all_data[(all_data['mov_date'] <= current_date)]
 
 
@@ -120,7 +121,9 @@ filter_year = st.selectbox('Select the year to filter: ', all_data['MOV_YEAR'].u
 filter_month = st.selectbox('Select the month to filter: ', all_data['MOV_MONTH'].unique().tolist())
 
 # filtering data frame 
-df_filtered = all_data[(all_data['MOV_YEAR'] == filter_year) & (all_data['MOV_MONTH'] == filter_month) & (all_data['mov_type']=='EXPENSES')]
+df_filtered = all_data[(all_data['MOV_YEAR'] == filter_year) & 
+                       (all_data['MOV_MONTH'] == filter_month) & 
+                       (all_data['mov_type']=='EXPENSES')]
 df_filtered = pd.pivot_table(df_filtered, values='amount', index=['mov_category', 'MOV_YEAR', 'MOV_MONTH'], aggfunc='sum', margins=True)
 df_filtered['amount'] = df_filtered['amount'].apply(format_currency)
 df_filtered.reset_index(inplace=True, drop=False)
