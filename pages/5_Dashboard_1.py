@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
-from utils.get_db_data import get_all_data_from_all_accounts
 import matplotlib.pyplot as plt
 from utils.general_utils import format_currency
+from utils.db_connector import Db_Connector
 
 st.set_page_config(page_title="Dashboard 1")
 
 st.markdown("# All Expenses by Category")
 
-
-all_data = get_all_data_from_all_accounts()
+db = Db_Connector()
+all_data = db.get_all_data_from_all_accounts() 
 
 df_filtered = all_data[(all_data['mov_type'] == 'EXPENSES')]
 df_filtered = df_filtered[['mov_category', 'amount']]

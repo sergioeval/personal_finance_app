@@ -1,14 +1,15 @@
 import streamlit as st
 import time
 # import numpy as np
-import sqlite3
 import os
 import glob
 import pandas as pd
-from utils.get_account_dbs import get_account_dataframe
+from utils.db_connector import Db_Connector
 
 ACCOUNTS_PATH = 'accounts/'
 SQL_TEMPLATES_PATH = 'sql_templates/'
+
+db_connector = Db_Connector()
 
 with open(SQL_TEMPLATES_PATH+'new_accounts.sql', mode='r') as f:
     sql_new_accounts = f.read()
@@ -32,20 +33,17 @@ with st.form("new_account_form", clear_on_submit=True):
    submitted = st.form_submit_button("Submit", )
 
    if submitted:
-        ACCOUNT_NAME = acccount_name.upper().replace(' ', '_')
-        ACCOUNT_TYPE = account_type.upper()
+        ACCOUNT_NAME = acccount_name.strip().upper().replace(' ', '_')
+        ACCOUNT_TYPE = account_type.strip().upper()
         FINAL_NAME = ACCOUNTS_PATH+ACCOUNT_NAME+'_'+ACCOUNT_TYPE
 
         if os.path.exists(FINAL_NAME+'.db'):
             st.write(f'The account with the name {FINAL_NAME} already exists.')
         
         if (not os.path.exists(FINAL_NAME+'.db')) & (acccount_name != ''):
-            conn = sqlite3.connect(FINAL_NAME+'.db')
-            # create table in db 
-            cursor = conn.cursor()
             # Create a table in the database
-            cursor.execute(sql_new_accounts)
-            conn.close()
+            db_connector.modify_db_sql(sql=sql_new_accounts, 
+                                       db_name=ACCOUNT_NAME+'_'+ACCOUNT_TYPE+'.db')
             st.write(f'The Account {FINAL_NAME} was created sucessfully') 
 
         if (acccount_name==''):
@@ -53,7 +51,7 @@ with st.form("new_account_form", clear_on_submit=True):
 
 
 
-acc_df = get_account_dataframe()
+acc_df = db_connector.get_all_account_names_df()
 
 
 st.write(f'Your created accounts: ', acc_df)

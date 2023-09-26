@@ -3,13 +3,14 @@ import pandas as pd
 # import altair as alt
 import sqlite3
 from utils.get_db_data import get_categories
+from utils.db_connector import Db_Connector
 
 
 st.set_page_config(page_title="Create Categories")
 
 st.markdown("# Creating categories in the database")
 
-CATEGORIES_PATH = 'categories/'
+db_connector = Db_Connector()
 
 # form for the category creation
 # form 
@@ -24,26 +25,24 @@ with st.form("new_categories", clear_on_submit=True):
    if submitted:
         if new_category:
             new_category = new_category.strip().upper().replace(' ', '_')
-            # new_category = new_category.strip()
-            conn = sqlite3.connect(CATEGORIES_PATH+'categories.db')
-            cursor = conn.cursor()
 
+            # Create table if not exists 
             sql = 'CREATE TABLE IF NOT EXISTS mytable (id INTEGER PRIMARY KEY, category TEXT)'
-            cursor.execute(sql)
-            conn.commit()
+            db_connector.modify_db_sql(sql=sql,  is_category_db=True)
 
             # check if category exist 
             sql = f"select category from mytable where category='{new_category}'"
-            data = pd.read_sql(con=conn, sql=sql)
+            data = db_connector.sql_to_df(sql=sql, is_category_db=True)
 
             if len(data) == 0:
                 sql = f"INSERT INTO mytable (category) VALUES ('{new_category}')"
-                cursor.execute(sql)
-                conn.commit()
+                db_connector.modify_db_sql(sql=sql, is_category_db=True)
             else: 
                 st.write(f'The category {new_category} already exists')
 
    
-categ_data , categ_list = get_categories()
+categ_data = db_connector.sql_to_df(sql='select category from mytable', 
+                                    is_category_db=True)
+
 
 st.write('Theese are the available categories: \n', categ_data)

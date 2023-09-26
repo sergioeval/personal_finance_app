@@ -3,5 +3,7 @@ CREATE TABLE mytable (
                     mov_date DATE,
                     mov_category TEXT, 
                     mov_type TEXT,
-                    amount NUMERIC
+                    amount NUMERIC,
+										transfer_from TEXT,
+										transfer_to TEXT
                 )
