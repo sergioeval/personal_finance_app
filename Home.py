@@ -7,6 +7,7 @@ from utils.general_utils import change_symbol, format_currency
 import time 
 from utils.boxApiJson import BoxApiJson
 import glob
+import datetime
 
 BOX_CREDS = 'secrets/'
 box_api = BoxApiJson(jsonPath=BOX_CREDS+'BoxCredentials.json')
@@ -21,6 +22,17 @@ st.set_page_config(
 
 st.write("# Welcome to this Open Personal Finance App 👋")
 
+st.markdown(
+    """
+    In this App you will be able to control your personal finances all in one place.
+
+    **👈 Select one of the options in the left menu** 
+
+    Start by creating new accounts and categories.
+"""
+)
+
+# ------------- SIDE BAR FOR BOX UPDATES STARTS HERE ----------------------
 with st.sidebar.form('Box Updates', clear_on_submit=True):
     st.markdown('### This action will update your local databases or upload your local databases to box.')
     box_action_confirm = st.selectbox('Select an action to perform: ', ['NONE', 'DOWNLOAD_DATABASES', 'UPLOAD_DATABASES'])
@@ -64,22 +76,22 @@ with st.sidebar.form('Box Updates', clear_on_submit=True):
                                        filePath='categories/categories.db')
 
 
-st.markdown(
-    """
-    In this App you will be able to control your personal finances all in one place.
+#---------- SIDE BAR FOR BOX UPDATES END HERE ----------------------
 
-    **👈 Select one of the options in the left menu** 
-
-    Start by creating new accounts and categories.
-"""
-)
-
+# ------------- MAIN CONTENT STARTS HERE --------------------
 # Create columns for tables 
 col1, col2 = st.columns(2)
 
-# get databases 
+# get current date 
+current_date = datetime.datetime.now() 
+
+#current_date = current_date.strftime('%Y-%m-%d')
+
+# get databases and filter only to current date 
 all_data = get_all_data_from_all_accounts()
-# print(all_data)
+all_data = all_data[(all_data['mov_date'] <= current_date)]
+
+
 
 all_data['amount'] = all_data.apply(lambda row: change_symbol(mov_type=row['mov_type'], val=row['amount']), axis=1)
 
@@ -115,3 +127,5 @@ df_filtered.reset_index(inplace=True, drop=False)
 #print(df_filtered)
 
 st.write('Expenses by category: ', df_filtered)
+
+# ------------------ MAIN CONTENT ENDS HERE -----------------------

@@ -6,6 +6,26 @@ from utils.get_account_dbs import get_account_dataframe
 CATEGORIES_PATH = 'categories/'
 ACCOUNTS_PATH = 'accounts/'
 
+
+def get_all_data_from_an_account(account_db_name, month_number):
+    '''
+    To get all the data from all accounts into a single dataframe 
+    '''
+
+    conn = sqlite3.connect(ACCOUNTS_PATH+account_db_name)
+    account_data = pd.read_sql(con=conn, sql='select * from mytable')
+    account_data['account'] = account_db_name
+
+    account_data['mov_date'] = pd.to_datetime(account_data['mov_date'])
+    account_data['MOV_YEAR'] = account_data['mov_date'].dt.year
+    account_data['MOV_MONTH'] = account_data['mov_date'].dt.month
+    account_data = account_data[(account_data['MOV_MONTH'] == month_number)]
+    
+    return account_data
+
+
+
+
 def get_all_data_from_all_accounts():
     '''
     To get all the data from all accounts into a single dataframe 
