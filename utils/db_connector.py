@@ -98,6 +98,7 @@ class Db_Connector:
         all_data['mov_date'] = pd.to_datetime(all_data['mov_date'])
         all_data['MOV_YEAR'] = all_data['mov_date'].dt.year
         all_data['MOV_MONTH'] = all_data['mov_date'].dt.month
+        all_data.sort_values(by='mov_date', ascending=True, inplace=True)
 
         return all_data
 
