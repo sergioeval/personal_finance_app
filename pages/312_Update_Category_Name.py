@@ -33,6 +33,7 @@ if 'new_categ_exists' not in st.session_state:
 #- Get all the category names in a list 
 connector = Db_Connector()
 category_list = connector.get_unique_categories_list()
+current_account_list = connector.get_db_names_list()
 
 #- Create a selectbox to select the category to modify 
 with st.form('Select category', clear_on_submit=True):
@@ -52,6 +53,10 @@ with st.form('Select category', clear_on_submit=True):
 with open('sql_templates/update_category_categorydb.sql', mode='r') as f:
     sql_categ_categdb_template = f.read()
 
+# SQL to modify caegory in each account 
+with open('sql_templates/update_acc_categ.sql', mode='r') as f:
+    sql_modify_categ_in_account_template = f.read()
+
 # check if the new category exist. 
 if st.session_state.new_category:
     st.session_state.new_categ_exists = connector.check_if_exist_category_name(category_name=st.session_state.new_category)
@@ -61,6 +66,16 @@ if st.session_state.new_categ_exists == 'not_exists':
     connector.update_record_category(sql=sql_categ_categdb_template, 
                                      old_categ=st.session_state.category_selected, 
                                      new_categ=st.session_state.new_category)
+
+    # modify in each account 
+    for account in current_account_list:
+        df_category_exist = connector.sql_to_df(sql=f"""select * from mytable where mov_category = '{st.session_state.category_selected}' """, db_name=account)
+
+        if len(df_category_exist) > 0:
+            connector.update_category_in_one_account(dbName=account, 
+                                                 sql=sql_modify_categ_in_account_template, 
+                                                 new_categ=st.session_state.new_category, 
+                                                 old_categ=st.session_state.category_selected)
 
 
 
