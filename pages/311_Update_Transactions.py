@@ -53,7 +53,8 @@ with st.form("Show Records", clear_on_submit=True):
     id_to_modify = st.number_input('What ID do you want to modify: ')
     field_to_modify = st.selectbox('Select the field to modify: ', ['mov_date',
                                                                     'mov_category',
-                                                                    'amount'])
+                                                                    'amount', 
+                                                                    'comments'])
 
     submitted = st.form_submit_button("Submit", )
 
@@ -79,6 +80,10 @@ with st.form('final_form_modification', clear_on_submit=True):
 
     if st.session_state.field == 'amount':
         new_value = st.number_input('Provide the new Amount: ')
+
+    if st.session_state.field == 'comments':
+        new_value = st.text_input('Provide the new Comment: ')
+
 
     submitted = st.form_submit_button("Submit", )
 
