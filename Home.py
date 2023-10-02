@@ -68,9 +68,12 @@ debits_data['amount'] = debits_data['amount'].apply(format_currency)
 # print(debits_data)
 
 with col1:
-    st.write('All Accounts Totals: ', pivot_table)
+    #st.write('All Accounts Totals: ', pivot_table)
+    st.write('### Totals All Accounts')
+    st.dataframe(data=pivot_table, height=450)
 
 with col2:
-    st.write('Only Debit Accounts: ', debits_data)
+    st.write('### Debit Accounts')
+    st.dataframe(data=debits_data, height=300)
 
 # ------------------ MAIN CONTENT ENDS HERE -----------------------
