@@ -66,6 +66,18 @@ class Db_Connector:
         self.connection.commit()
         self._close_connection()
 
+    def update_record_category(self, sql, old_categ ,new_categ):
+        self._connect_to_db(is_category_db=True)
+        self.cur.execute(sql, (new_categ, old_categ))
+        self.connection.commit()
+        self._close_connection()
+
+    def update_category_in_one_account(self, dbName, sql, new_categ, old_categ):
+        self._connect_to_db(db_name=dbName)
+        self.cur.execute(sql, (new_categ, old_categ))
+        self.connection.commit()
+        self._close_connection()
+
     def get_unique_categories_list(self):
         self._connect_to_db(is_category_db=True)
         categories_df = pd.read_sql(sql='select category from mytable', 
@@ -73,6 +85,16 @@ class Db_Connector:
         categories_list = categories_df['category'].tolist()
         self._close_connection()
         return categories_list
+
+    def check_if_exist_category_name(self, category_name):
+        self._connect_to_db(is_category_db=True)
+        sql = f"select * from mytable where category = '{category_name}'"
+        data = pd.read_sql(sql=sql, con=self.connection)
+        self._close_connection()
+        if len(data) > 0:
+            print(data)
+            return 'exists'
+        return 'not_exists'
 
     def get_unique_account_names_list(self):
         accounts_df = self.get_all_account_names_df()

@@ -28,6 +28,9 @@ df_filtered = df_filtered[['mov_category', 'amount']]
 df_filtered = df_filtered.groupby('mov_category').aggregate({'amount': 'sum'})
 df_filtered.reset_index(inplace=True, drop=False)
 
+# get the total Expenses 
+total = format_currency(df_filtered['amount'].sum())
+st.write(f'# The Total of Expenses in this Month is: {total}')
 
 # Overlay values on the bar chart using matplotlib
 fig, ax = plt.subplots()
