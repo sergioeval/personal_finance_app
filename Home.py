@@ -3,16 +3,11 @@ import pandas as pd
 import sqlite3
 from utils.general_utils import change_symbol, format_currency
 import time 
-from utils.boxApiJson import BoxApiJson
 import glob
 import datetime
 from utils.db_connector import Db_Connector
 
 
-BOX_CREDS = 'secrets/'
-box_api = BoxApiJson(jsonPath=BOX_CREDS+'BoxCredentials.json')
-box_accounts_folder_id = '227810718878'
-box_categories_folder_id = '227810963459'
 ACCOUNTS_PATH = 'accounts/'
 
 db =  Db_Connector()
@@ -49,14 +44,16 @@ current_date = datetime.datetime.now()
 # get databases and filter only to current date 
 #all_data = get_all_data_from_all_accounts()
 all_data =db.get_all_data_from_all_accounts()
+print(all_data)
+
 all_data = all_data[(all_data['mov_date'] <= current_date)]
 
 
 
 all_data['amount'] = all_data.apply(lambda row: change_symbol(mov_type=row['mov_type'], val=row['amount']), axis=1)
-
 #pivot table 
 pivot_table = all_data.copy()
+# filter out PAYMENT types 
 pivot_table = pd.pivot_table(pivot_table, values='amount', index='account', aggfunc='sum', margins=True)
 pivot_table['amount'] = pivot_table['amount'].apply(format_currency)
 

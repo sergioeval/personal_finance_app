@@ -12,6 +12,7 @@ st.write('Select your filters')
 
 db = Db_Connector()
 all_data = db.get_all_data_from_all_accounts() 
+all_data = all_data[all_data['mov_type'] != 'PAYMENT']
 
 # select a filter to use to vizualize data by category and by date 
 filter_year = st.selectbox('Select the year to filter: ', all_data['MOV_YEAR'].unique().tolist())

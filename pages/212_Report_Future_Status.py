@@ -18,6 +18,7 @@ st.write("# This is the status of your accounts adding future transactions")
 db = Db_Connector()
 
 all_data = db.get_all_data_from_all_accounts()
+all_data = all_data[all_data['mov_type'] != 'PAYMENT']
 
 max_date = max(all_data['mov_date'])
 max_date = max_date.strftime("%B %d %Y")

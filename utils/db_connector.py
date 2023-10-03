@@ -102,11 +102,12 @@ class Db_Connector:
         return accounts_list
 
     def get_mov_types_list(self):
-        return ['INCOME', 'EXPENSES', 'TRANSFERS']
+        return ['INCOME', 'EXPENSES', 'TRANSFERS', 'PAYMENT']
 
     def get_all_data_from_all_accounts(self):
         '''
         To get all the data from all accounts into a single dataframe 
+        This will get data with out the PAYMENT types 
         '''
         accounts_list = self.get_unique_account_names_list()
         all_data = pd.DataFrame()
@@ -120,9 +121,55 @@ class Db_Connector:
         all_data['mov_date'] = pd.to_datetime(all_data['mov_date'])
         all_data['MOV_YEAR'] = all_data['mov_date'].dt.year
         all_data['MOV_MONTH'] = all_data['mov_date'].dt.month
+        all_data = all_data[all_data['mov_type'] != 'PAYMENT']
         all_data.sort_values(by='mov_date', ascending=True, inplace=True)
 
         return all_data
+
+    def get_all_data_from_all_accounts_payments_only(self):
+        '''
+        To get all the data from all accounts into a single dataframe 
+        This will get data with out the PAYMENT types 
+        '''
+        accounts_list = self.get_unique_account_names_list()
+        all_data = pd.DataFrame()
+
+        for acc in accounts_list:
+            temp = self.sql_to_df(sql='select * from mytable', 
+                                  db_name=acc)
+            temp['account'] = acc
+            all_data = pd.concat([all_data, temp], ignore_index=True)
+
+        all_data['mov_date'] = pd.to_datetime(all_data['mov_date'])
+        all_data['MOV_YEAR'] = all_data['mov_date'].dt.year
+        all_data['MOV_MONTH'] = all_data['mov_date'].dt.month
+        all_data = all_data[all_data['mov_type'] == 'PAYMENT']
+        all_data.sort_values(by='mov_date', ascending=True, inplace=True)
+
+        return all_data
+
+    def get_all_data_from_all_accounts_incomes_only(self):
+        '''
+        To get all the data from all accounts into a single dataframe 
+        This will get data with out the PAYMENT types 
+        '''
+        accounts_list = self.get_unique_account_names_list()
+        all_data = pd.DataFrame()
+
+        for acc in accounts_list:
+            temp = self.sql_to_df(sql='select * from mytable', 
+                                  db_name=acc)
+            temp['account'] = acc
+            all_data = pd.concat([all_data, temp], ignore_index=True)
+
+        all_data['mov_date'] = pd.to_datetime(all_data['mov_date'])
+        all_data['MOV_YEAR'] = all_data['mov_date'].dt.year
+        all_data['MOV_MONTH'] = all_data['mov_date'].dt.month
+        all_data = all_data[all_data['mov_type'] == 'INCOME']
+        all_data.sort_values(by='mov_date', ascending=True, inplace=True)
+
+        return all_data
+
 
     def get_data_from_account_and_month(self, db_name, month_number):
         data = self.sql_to_df(sql='select * from mytable',
