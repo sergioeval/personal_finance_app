@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
 from utils.general_utils import change_symbol, format_currency
-import time 
+import time
 import glob
 import datetime
 from utils.db_connector import Db_Connector
 
-# session state 
+# session state
 if 'start_date' not in st.session_state:
     st.session_state.start_date = None
 
 if 'end_date' not in st.session_state:
     st.session_state.end_date = None
 
-# create connector  
+# create connector
 connector = Db_Connector()
 
-# get all data 
+# get all data
 payments_data = connector.get_all_data_from_all_accounts_payments_only()
 income_data = connector.get_all_data_from_all_accounts_incomes_only()
 
@@ -27,8 +27,7 @@ with st.form('get_dates', clear_on_submit=True):
     start_date = st.date_input('Start Date:')
     end_date = st.date_input('End Date:')
 
-
-    # submit 
+    # submit
     submitted = st.form_submit_button('Submit',)
 
     if submitted:
@@ -41,11 +40,17 @@ if st.session_state.start_date and st.session_state.end_date:
         st.warning('# Please provide and End date greater than the Start Date')
 
     if st.session_state.start_date < st.session_state.end_date:
-        all_data = all_data[(all_data['mov_date'] >= pd.Timestamp(st.session_state.start_date)) & (all_data['mov_date'] <= pd.Timestamp(st.session_state.end_date)) ]
+        all_data = all_data[(all_data['mov_date'] >= pd.Timestamp(st.session_state.start_date)) & (
+            all_data['mov_date'] <= pd.Timestamp(st.session_state.end_date))]
         all_data.reset_index(inplace=True, drop=True)
         del all_data['id']
-        
+        del all_data['transfer_from']
+        del all_data['transfer_to']
+        del all_data['MOV_YEAR']
+        del all_data['MOV_MONTH']
+
         st.write('### These are all Payments and Incomes: ')
         st.dataframe(data=all_data, height=300)
 
-        st.write('### Summary Totals: ', format_currency(all_data['amount'].sum()))
+        st.write('### Summary Totals: ',
+                 format_currency(all_data['amount'].sum()))

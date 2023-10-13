@@ -17,6 +17,7 @@ select_account = st.selectbox('Select an Account:', accounts['Account_Name'].tol
 
 sql = 'select * from mytable'
 data = db_connector.sql_to_df(sql=sql, db_name=select_account)
+data.sort_values(by='mov_date', inplace=True, ascending=False)
 
 st.write(f'These are you transactions for account {select_account}', data)
 # cursor = conn.cursor()
