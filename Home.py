@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 
-st.write("# Welcome to this Open Personal Finance App 👋")
+st.write("# Welcome to this Minimal version of Open Personal Finance App 👋")
 
 st.markdown(
     """

@@ -12,44 +12,25 @@ class Db_Connector:
         run a query in db 
     '''
     def __init__(self):
-        self.ACCOUNTS_PATH = 'accounts/'
-        self.CATEGORIES_PATH = 'categories/'
-        self.categories_account_name = 'categories.db'
+        self.minimal_db_dir = 'minimal_db/'
+        self.minimal_db = 'main.db'
 
-    def get_all_account_names_df(self):
-        account_list = glob.glob(self.ACCOUNTS_PATH+'*.db', recursive=True)
-        account_list = [acc.split('/')[1] for acc in account_list]
-
-        accounts_data = []
-        for acc in account_list:
-            temp = {
-                'Account_Name': acc
-            }
-            accounts_data.append(temp)
-
-        acc_df = pd.DataFrame(accounts_data)
-        return acc_df
-
-    def get_db_names_list(self):
-        accounts_df = self.get_all_account_names_df()
-        accounts_list = accounts_df['Account_Name'].tolist()
-        return accounts_list
-
-    def _connect_to_db(self, db_name='', is_category_db=False):
+    def _connect_to_db(self):
         '''Connect to db '''
-        if is_category_db:
-            self.connection = sqlite3.connect(self.CATEGORIES_PATH+self.categories_account_name)
-
-        if is_category_db == False:
-            self.connection = sqlite3.connect(self.ACCOUNTS_PATH+db_name)
-
+        self.connection = sqlite3.connect(self.minimal_db_dir+self.minimal_db)
         self.cur = self.connection.cursor()
 
     def _close_connection(self):
         self.connection.close()
+    
+    def run_query_on_db(self, sql):
+        self._connect_to_db()
+        self.cur.execute(sql)
+        self.connection.commit()
+        self._close_connection()
 
-    def sql_to_df(self, sql, db_name='', is_category_db=False):
-        self._connect_to_db(db_name, is_category_db)
+    def sql_to_df(self, sql):
+        self._connect_to_db()
         data = pd.read_sql(sql=sql, con=self.connection)
         self._close_connection()
         return data

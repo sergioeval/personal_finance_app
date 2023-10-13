@@ -8,7 +8,7 @@ import datetime
 
 
 def change_symbol(mov_type, val):
-    if mov_type == 'EXPENSES':
+    if mov_type == 'CREDIT_PAYMENT':
         return -val
     else:
         return val
