@@ -18,8 +18,7 @@ if 'end_date' not in st.session_state:
 
 BOX_CREDS = 'secrets/'
 box_api = BoxApiJson(jsonPath=BOX_CREDS+'BoxCredentials.json')
-box_accounts_folder_id = '227810718878'
-box_categories_folder_id = '227810963459'
+box_minimal_db_folder_id = '230720620516'
 
 db =  Db_Connector()
 
