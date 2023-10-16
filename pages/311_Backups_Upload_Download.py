@@ -49,5 +49,5 @@ with st.form('Box Updates', clear_on_submit=True):
             print('UPLOADING')
             # uploading accounts 
             box_api.uploadNewOrVersion(folderId=box_minimal_db_folder_id, 
-                                        fileName='main_db', 
+                                        fileName='main.db', 
                                         filePath=minimal_db_path)
